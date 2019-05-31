@@ -1,0 +1,11 @@
+{
+  "服务器端口":"启动时监听",
+  "api_port": 7873,
+
+  "数据库类型": "例如：sqlite3",
+  "db_type": "sqlite3",
+
+  "数据库连接": "",
+  "db_source":"./db.sqlite"
+
+}
