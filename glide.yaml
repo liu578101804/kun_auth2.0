@@ -1,0 +1,4 @@
+package: github.com/liu578101804/kun_auth2.0
+import:
+- package: github.com/go-xorm/xorm
+  version: v0.7.1
