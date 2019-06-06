@@ -1,0 +1,47 @@
+package handler
+
+import (
+  "fmt"
+  "github.com/liu578101804/kun_auth2.0/config"
+  "github.com/gin-gonic/gin"
+)
+
+var(
+  G_app *gin.Engine
+)
+
+func InitHandler() (err error) {
+
+  //var(
+  //  logF *os.File
+  //)
+  //
+  ////配置日志
+  //if logF,err = os.Create(config.G_config.LogoPath);err != nil {
+  //  return err
+  //}
+  ////配置日志
+  //gin.DefaultWriter = io.Writer(logF)
+
+  //创建
+  G_app = gin.Default()
+
+  //自定义分隔符
+  G_app.Delims("{{", "}}")
+
+  //设置静态资源路径
+  G_app.Static("/static", config.G_config.StaticPath)
+  G_app.StaticFile("/favicon.ico", config.G_config.StaticPath+"/favicon.ico")
+  //配置全局模板路径
+  G_app.LoadHTMLGlob(config.G_config.HtmlPath+"/*/**")
+
+  //注册页面路由
+  RegPageHandler()
+  RegAdminHandler()
+
+  //启动运行
+  fmt.Println("server is run listing at", config.G_config.ApiPort)
+  G_app.Run(fmt.Sprintf(":%d", config.G_config.ApiPort))
+
+  return nil
+}

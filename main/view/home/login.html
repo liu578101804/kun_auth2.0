@@ -1,0 +1,72 @@
+{{ define "home/login" }}
+
+{{template "home/header" .}}
+
+<div class="container">
+  <div class="columns">
+    <div class="column is-4 is-offset-4 login">
+
+      <div class="login-plan">
+        <div class="control">
+          <label for="">Username or email address</label>
+          <input class="input" type="text" id="email">
+        </div>
+
+        <div class="control">
+          <label for="">Password</label>
+          <input class="input" type="password" id="password">
+        </div>
+
+        <div class="control">
+          <button class="button is-info is-fullwidth" id="signButton">Sign in</button>
+        </div>
+      </div>
+
+      <div class="regist-plan">
+        New to GitHub? <a href="">Create an account</a>.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{{template "home/footer" .}}
+
+<!-- 请求脚本 -->
+
+<script>
+  getUrlParam = function (name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]);
+    return null;
+  }
+
+  $("#signButton").click(function () {
+
+    var data = {
+      email: $("#email").val(),
+      password: $("#password").val(),
+      client_id: getUrlParam('client_id'),
+      return_to: getUrlParam('return_to')
+    }
+
+    $.ajax({
+      type: 'POST',
+      url: "/login",
+      data: data,
+      success: function (res) {
+        if (res.code == 200) {
+          window.location.href = res.data.redirect_url;
+        } else {
+          alert(res.msg);
+        }
+      },
+      dataType: "json"
+    })
+
+  })
+
+</script>
+
+{{ end }}

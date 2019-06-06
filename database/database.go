@@ -6,7 +6,6 @@ import (
 
   "github.com/liu578101804/kun_auth2.0/config"
   "github.com/liu578101804/kun_auth2.0/models"
-  "github.com/go-xorm/core"
   "fmt"
 )
 
@@ -22,9 +21,10 @@ func InitDatabase() (err error) {
   }
 
   //设置表前缀
+
   //TODO: 好像不生效
-  tbMapper := core.NewPrefixMapper(core.SnakeMapper{}, "ka_")
-  G_engine.SetTableMapper(tbMapper)
+  //tbMapper := core.NewPrefixMapper(core.SnakeMapper{}, "ka_")
+  //G_engine.SetTableMapper(tbMapper)
 
   //打印sql日志
   G_engine.ShowSQL(true)
@@ -40,7 +40,11 @@ func sycTable()  {
     err error
   )
   if err = G_engine.Sync2(
-    new(models.OauthClients));err != nil {
+    new(models.OauthClients),
+    new(models.OauthAuthorizationCode),
+    new(models.OauthAccessToken),
+    new(models.OauthRefreshToken),
+    new(models.OauthUser));err != nil {
     fmt.Println(err)
   }
 }

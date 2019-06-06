@@ -1,6 +1,10 @@
 package: github.com/liu578101804/kun_auth2.0
 import:
+- package: golang.org/x/sys
 - package: github.com/go-xorm/xorm
-  version: v0.6.6
+  version: v0.7.1
+- package: github.com/gin-gonic/gin
+  version: v1.4.0
 - package: github.com/mattn/go-sqlite3
   version: v1.10.0
+

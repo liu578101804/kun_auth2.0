@@ -1,0 +1,29 @@
+.fr {
+  float: right;
+}
+
+.fl {
+  float: left;
+}
+
+.login {
+  margin-top: 2rem;
+  /* background-color: #cccccc; */
+  min-width: 400px;
+}
+
+.login-plan {
+  border: 1px solid #efefef;
+  padding: 1rem;
+}
+
+.login-plan .control {
+  margin-top: 1rem;
+}
+
+.regist-plan {
+  margin-top: 1rem;
+  border: 1px solid #efefef;
+  padding: 1rem;
+  text-align: center;
+}

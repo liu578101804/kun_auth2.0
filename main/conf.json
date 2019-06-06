@@ -2,10 +2,22 @@
   "服务器端口":"启动时监听",
   "api_port": 7873,
 
+  "静态资源路径": "不要以/结尾，同时 favicon.ico 默认从这目录下面找",
+  "static_path": "./static",
+
+  "模板文件路径":"不要以/结尾",
+  "html_path": "./view",
+
   "数据库类型": "例如：sqlite3",
   "db_type": "sqlite3",
 
   "数据库连接": "",
-  "db_source":"./db.sqlite"
+  "db_source":"./db.sqlite",
+
+  "日志目录":"",
+  "logo_path":"./logs/gin.log",
+
+  "token过期时间":"单位毫秒",
+  "token_expires_at": 6000000
 
 }

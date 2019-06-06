@@ -1,11 +1,13 @@
 package main
 
 import (
-  "github.com/liu578101804/kun_auth2.0/config"
   "flag"
   "runtime"
   "fmt"
+  "time"
+  "github.com/liu578101804/kun_auth2.0/config"
   "github.com/liu578101804/kun_auth2.0/database"
+  "github.com/liu578101804/kun_auth2.0/handler"
 )
 
 var (
@@ -24,6 +26,7 @@ func initEnv() {
 }
 
 func main() {
+
   var(
     err error
   )
@@ -39,12 +42,20 @@ func main() {
     goto ERR
   }
 
-
   //初始化数据库
   if err = database.InitDatabase();err != nil {
     goto ERR
   }
 
+  //初始化路由
+  if err = handler.InitHandler();err != nil {
+    goto ERR
+  }
+
+  // 正常退出
+  for {
+    time.Sleep(1 * time.Second)
+  }
 
   return
 ERR:

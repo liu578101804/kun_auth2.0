@@ -10,6 +10,10 @@ type Config struct {
   ApiPort     int       `json:"api_port"`
   DbType      string    `json:"db_type"`
   DbSource    string    `json:"db_source"`
+  StaticPath  string    `json:"static_path"`
+  HtmlPath    string    `json:"html_path"`
+  LogoPath    string    `json:"logo_path"`
+  TokenExpiresAt  int   `json:"token_expires_at"`
 }
 
 var (
