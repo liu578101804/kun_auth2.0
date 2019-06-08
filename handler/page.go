@@ -120,23 +120,52 @@ func OauthToken(c *gin.Context) {
     clientSecret  string
     code  string
     err error
+    authorization *models.OauthAuthorizationCode
+    client *models.OauthClients
+    accessToken *models.OauthAccessToken
   )
 
   clientSecret = c.DefaultPostForm("client_secret","")
   code = c.DefaultPostForm("code","")
 
   if clientSecret==""||code=="" {
-    errCode = 100001
+    errCode = 200001
     err = errors.New("client_secret,code不能为空")
     goto RJSON
   }
 
-  if err = service.CreateAccessToken("1",1);err != nil {
+  //查询code信息
+  if authorization,err = service.GetAuthorizationCodeByCode(code); err != nil {
+    errCode = 200002
+    goto RJSON
+  }
+  //查关于client的信息
+  if client,err = service.QueryClientByClientKey(authorization.ClientId); err != nil{
+    errCode = 200003
+    goto RJSON
+  }
+  if client.ClientSecret != clientSecret {
+    errCode = 200004
+    err = errors.New("秘钥不对")
+    goto RJSON
+  }
+
+  //生成token
+  if accessToken,err = service.CreateAccessToken(client.ClientKey,authorization.UserId);err != nil {
     fmt.Println(err)
     return
   }
 
+  c.JSON(http.StatusOK, gin.H{
+    "code": 200,
+    "msg": "操作成功",
+    "data": gin.H{
+      "token": accessToken.Token,
+      "expires_at": accessToken.ExpiresAt.Format("2006-01-02 15:04:05"),
+    },
+  })
 
+  return
 
 RJSON:
 

@@ -70,26 +70,45 @@ func CreateCode(UserId int, ClientId, code string) (err error) {
   return
 }
 
+// 通过code查到相关信息
+func GetAuthorizationCodeByCode(code string) (*models.OauthAuthorizationCode,error) {
+  var(
+    oacModel models.OauthAuthorizationCode
+    has bool
+    err error
+  )
+  oacModel = models.OauthAuthorizationCode{
+    Code: code,
+  }
+  if has,err = database.G_engine.Get(&oacModel);err != nil {
+    return nil, err
+  }
+  if !has {
+    return nil, errors.New("没找到code")
+  }
+  return &oacModel, nil
+}
+
+
 // 生成Token
-func CreateAccessToken(clientId string, userId int) (err error) {
+func CreateAccessToken(clientId string, userId int) (*models.OauthAccessToken,error) {
 
   var(
     token string
-    refToken string
+    //refToken string
     nowTime time.Time
     exportAt time.Time
+    oatModel models.OauthAccessToken
+    err error
   )
 
   token = utils.CreateToken()
-  refToken = utils.CreateToken()
+  //refToken = utils.CreateToken()
 
   nowTime = time.Now()
   hh, _ := time.ParseDuration(fmt.Sprintf("%vms",config.G_config.TokenExpiresAt))
   exportAt = nowTime.Add(hh)
 
-  var(
-    oatModel models.OauthAccessToken
-  )
   oatModel = models.OauthAccessToken{
     Token: token,
     UserId: userId,
@@ -97,14 +116,8 @@ func CreateAccessToken(clientId string, userId int) (err error) {
     ExpiresAt: exportAt,
   }
   if _,err = database.G_engine.Insert(oatModel);err != nil {
-    return
+    return nil,err
   }
-  return
 
-
-
-  exportAt = exportAt
-  refToken = refToken
-
-  return
+  return &oatModel,nil
 }
