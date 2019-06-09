@@ -35,6 +35,33 @@ func LoginService(email, password string) (*models.OauthUser, error) {
   return &userModel,nil
 }
 
+//注册
+func RegisterService(email, password string) (*models.OauthUser, error)  {
+  var(
+    err error
+    regUserModel models.OauthUser
+  )
+  if _,err = LoginService(email,password);err != nil{
+    if err.Error() == "用户未注册" {
+      regUserModel = models.OauthUser{
+        Email: email,
+        Password : password,
+        OpenId: utils.CreateUserOpenId(),
+      }
+      if _,err = database.G_engine.InsertOne(&regUserModel);err != nil {
+        goto ERR
+      }
+      return &regUserModel,nil
+    }else{
+      err = errors.New("用户已经存在")
+      goto ERR
+    }
+  }
+  err = errors.New("用户已经存在")
+ERR:
+  return nil,err
+}
+
 // 查询client信息
 func QueryClientByClientKey(clientKey string) (*models.OauthClients,error) {
   var(
@@ -58,11 +85,20 @@ func QueryClientByClientKey(clientKey string) (*models.OauthClients,error) {
 func CreateCode(UserId int, ClientId, code string) (err error) {
   var(
     oacModel models.OauthAuthorizationCode
+    nowTime time.Time
+    exportAt time.Time
   )
+
+  nowTime = time.Now()
+  hh, _ := time.ParseDuration(fmt.Sprintf("%vms",config.G_config.CodeExpiresAt))
+  exportAt = nowTime.Add(hh)
+
   oacModel = models.OauthAuthorizationCode{
     Code: code,
     UserId: UserId,
     ClientId: ClientId,
+    ExpiresAt: exportAt,
+    IsUse: "F",
   }
   if _,err = database.G_engine.Insert(oacModel);err != nil {
     return
@@ -88,7 +124,6 @@ func GetAuthorizationCodeByCode(code string) (*models.OauthAuthorizationCode,err
   }
   return &oacModel, nil
 }
-
 
 // 生成Token
 func CreateAccessToken(clientId string, userId int) (*models.OauthAccessToken,error) {
@@ -121,3 +156,6 @@ func CreateAccessToken(clientId string, userId int) (*models.OauthAccessToken,er
 
   return &oatModel,nil
 }
+
+
+//获取用户授权的结构

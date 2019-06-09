@@ -1,12 +1,12 @@
 package database
 
 import (
-  _ "github.com/mattn/go-sqlite3"
   "github.com/go-xorm/xorm"
-
   "github.com/liu578101804/kun_auth2.0/config"
   "github.com/liu578101804/kun_auth2.0/models"
-  "fmt"
+  "github.com/liu578101804/kun_auth2.0/utils"
+  _ "github.com/mattn/go-sqlite3"
+  "time"
 )
 
 var(
@@ -14,37 +14,123 @@ var(
 )
 
 func InitDatabase() (err error) {
+  var(
+    userId int
+  )
 
   //连接
   if G_engine,err = xorm.NewEngine(config.G_config.DbType, config.G_config.DbSource); err != nil {
     return err
   }
 
-  //设置表前缀
-
-  //TODO: 好像不生效
-  //tbMapper := core.NewPrefixMapper(core.SnakeMapper{}, "ka_")
-  //G_engine.SetTableMapper(tbMapper)
+  G_engine.DatabaseTZ = time.Local // 必须
+  G_engine.TZLocation = time.Local // 必须
 
   //打印sql日志
   G_engine.ShowSQL(true)
 
   //同步表
-  sycTable()
+  if err = sycTable();err != nil{
+    return
+  }
+  //初始化数据
+  if userId,err = initAdminUser();err != nil {
+    return
+  }
+  if _,err = initAdminSecret(userId);err != nil {
+    return
+  }
 
-  return nil
+  return
 }
 
-func sycTable()  {
-  var(
-    err error
-  )
+func sycTable() (err error) {
+
   if err = G_engine.Sync2(
     new(models.OauthClients),
     new(models.OauthAuthorizationCode),
     new(models.OauthAccessToken),
     new(models.OauthRefreshToken),
     new(models.OauthUser));err != nil {
-    fmt.Println(err)
   }
+  return
+}
+
+func initAdminUser() (userId int,err error) {
+  var(
+    userM models.OauthUser
+    nUserM  models.OauthUser
+    has bool
+  )
+  userM = models.OauthUser{
+    Email: config.G_config.AdminEmail,
+  }
+  if has,err = G_engine.Get(&userM);err != nil {
+    return
+  }
+  //是否已经创建了管理员
+  if !has {
+    //创建管理员
+    nUserM = models.OauthUser{
+      Email: config.G_config.AdminEmail,
+      Password: utils.CreatePassword(config.G_config.AdminPassword),
+      OpenId: config.G_config.AdminOpenId,
+      Name: "管理员",
+    }
+    if _,err = G_engine.InsertOne(&nUserM);err != nil {
+      userId = nUserM.BaseModel.Id
+      return
+    }
+  }else{
+    //更新管理员
+    nUserM = models.OauthUser{
+      Email: config.G_config.AdminEmail,
+      Password: utils.CreatePassword(config.G_config.AdminPassword),
+      OpenId: config.G_config.AdminOpenId,
+    }
+    if _,err = G_engine.Where("email=?",nUserM.Email).Update(&nUserM);err != nil {
+      return
+    }
+  }
+  userId = userM.BaseModel.Id
+  return
+}
+
+func initAdminSecret(userId int) (clientId int, err error) {
+  var(
+    clientM models.OauthClients
+    nClientM  models.OauthClients
+    has bool
+  )
+  clientM = models.OauthClients{
+    UserId: userId,
+  }
+  if has,err = G_engine.Get(&clientM);err != nil {
+    return
+  }
+  if !has {
+    nClientM = models.OauthClients{
+      UserId: userId,
+      ClientKey: config.G_config.AdminClientKey,
+      ClientSecret:config.G_config.AdminClientSecret,
+      RedirectUrl: config.G_config.Localhost,
+      AppName: config.G_config.AppName,
+    }
+    if _,err = G_engine.InsertOne(&nClientM);err != nil {
+      return
+    }
+  }else{
+    nClientM = models.OauthClients{
+      UserId: userId,
+      ClientKey: config.G_config.AdminClientKey,
+      ClientSecret:config.G_config.AdminClientSecret,
+      RedirectUrl: config.G_config.Localhost,
+      AppName: config.G_config.AppName,
+    }
+    if _,err = G_engine.Where("user_id=?",userId).Update(&nClientM);err != nil {
+      return
+    }
+  }
+  clientId = clientM.BaseModel.Id
+  return
 }

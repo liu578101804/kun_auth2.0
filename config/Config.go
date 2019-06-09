@@ -13,7 +13,19 @@ type Config struct {
   StaticPath  string    `json:"static_path"`
   HtmlPath    string    `json:"html_path"`
   LogoPath    string    `json:"logo_path"`
+
   TokenExpiresAt  int   `json:"token_expires_at"`
+  CodeExpiresAt   int   `json:"code_expires_at"`
+
+  AppName   string    `json:"app_name"`
+  Localhost     string  `json:"localhost"`
+  LoadLocation  string  `json:"load_location"`
+
+  AdminClientKey  string  `json:"admin_client_key"`
+  AdminClientSecret string  `json:"admin_client_secret"`
+  AdminEmail  string  `json:"admin_email"`
+  AdminPassword   string  `json:"admin_password"`
+  AdminOpenId     string  `json:"admin_open_id"`
 }
 
 var (

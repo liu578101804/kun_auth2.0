@@ -38,10 +38,11 @@ func InitHandler() (err error) {
   //注册页面路由
   RegPageHandler()
   RegAdminHandler()
+  RegUserHandler()
 
   //启动运行
   fmt.Println("server is run listing at", config.G_config.ApiPort)
-  G_app.Run(fmt.Sprintf(":%d", config.G_config.ApiPort))
+  _ = G_app.Run(fmt.Sprintf(":%d", config.G_config.ApiPort))
 
   return nil
 }

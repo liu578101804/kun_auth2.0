@@ -42,6 +42,9 @@ func main() {
     goto ERR
   }
 
+  //处理时区问题
+  time.LoadLocation(config.G_config.LoadLocation)
+
   //初始化数据库
   if err = database.InitDatabase();err != nil {
     goto ERR

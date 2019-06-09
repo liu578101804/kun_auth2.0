@@ -1,0 +1,20 @@
+{{ define "home/index" }}
+
+  {{template "home/header" .}}
+
+  <div class="container">
+    <div class="columns">
+      <div class="column is-4 is-offset-4 login">
+
+        <h2>auth账号中心</h2>
+
+        <a href="/oauth/login">登录</a>
+        <a href="/oauth/register">注册</a>
+
+      </div>
+    </div>
+  </div>
+
+  {{template "home/footer" .}}
+
+{{ end }}

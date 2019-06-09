@@ -18,6 +18,28 @@
   "logo_path":"./logs/gin.log",
 
   "token过期时间":"单位毫秒",
-  "token_expires_at": 6000000
+  "token_expires_at": 6000000,
+  "code过期时间": "单位毫秒",
+  "code_expires_at": 20000,
 
+
+  "时区": "Asia/Shanghai",
+  "load_location": "Asia/Shanghai",
+
+  "网站的地址": "http://127.0.0.1",
+  "localhost": "http://127.0.0.1",
+
+  "系统名字": "",
+  "app_name": "管理系统",
+
+  "管理员邮箱": "",
+  "admin_email": "admin@qq.com",
+  "管理员密码": "",
+  "admin_password": "admin",
+  "管理员的open_id": "很重要不能随便修改",
+  "admin_open_id": "DGVrUqdhc2NHEHEtgi",
+  "管理员的client_key": "随机生成20位字符串，用于管理用户信息",
+  "admin_client_key": "54f123c02ea8746b0605",
+  "管理员的client_secret": "随机40位字符串",
+  "admin_client_secret": "07549c6921015ca1899a58abbe99595763f18ce6"
 }
