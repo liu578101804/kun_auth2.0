@@ -51,7 +51,7 @@ func main() {
   }
 
   //初始化路由
-  if err = handler.InitHandler();err != nil {
+  if err = handler.Init();err != nil {
     goto ERR
   }
 
@@ -61,6 +61,6 @@ func main() {
   }
 
   return
-ERR:
-  fmt.Println(err)
+  ERR:
+    fmt.Println(err)
 }

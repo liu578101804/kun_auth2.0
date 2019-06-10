@@ -6,7 +6,12 @@ import (
 )
 
 func RegAdminHandler()  {
-  G_app.GET("/admin", AdminIndexPage)
+  var(
+    router *gin.RouterGroup
+  )
+  router = G_app.Group("/admin")
+
+  router.GET("/", AdminIndexPage)
 }
 
 func AdminIndexPage(c *gin.Context)  {

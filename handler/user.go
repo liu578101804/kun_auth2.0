@@ -3,25 +3,58 @@ package handler
 import (
   "github.com/gin-gonic/gin"
   "net/http"
+  "github.com/liu578101804/kun_auth2.0/service"
+  "github.com/liu578101804/kun_auth2.0/models"
+  "github.com/liu578101804/kun_auth2.0/env"
 )
 
 func RegUserHandler()  {
+  var(
+    router *gin.RouterGroup
+  )
+  router = G_app.Group("/user")
 
-  G_app.GET("/user/:token", UserPage)
-  
+  router.POST("/", UserInfo)
 }
 
 func UserPage(c *gin.Context)  {
-  var(
-    token string
-  )
-  token = c.Param("token")
-
-  //验证token
-  token = token
-
-  //查询用户信息
 
   //返回用户信息页面
   c.HTML(http.StatusOK, "home/user", gin.H{})
 }
+
+func UserInfo(c *gin.Context)  {
+  var(
+    token string
+    err error
+    errCode int
+    accessTokenModel *models.OauthAccessToken
+    userModel *models.OauthUser
+  )
+  token = c.DefaultPostForm("token","")
+
+  token = token
+
+  ////验证token
+  //if accessTokenModel,err = checkToken(token);err != nil {
+  //  errCode = env.ERRCODE_USER_INFO + 1
+  //  goto ERR
+  //}
+
+  //查询用户信息
+  if userModel,err = service.GetUserInfo(accessTokenModel.UserId);err !=nil {
+    errCode = env.ERRCODE_USER_INFO + 2
+    goto ERR
+  }
+
+  c.JSON(http.StatusOK,createSuccess(gin.H{
+    "open_id": userModel.OpenId,
+    "name": userModel.Name,
+    "email": userModel.Email,
+  }))
+
+  return
+  ERR:
+    c.JSON(http.StatusOK, createERR(errCode,err.Error()))
+}
+

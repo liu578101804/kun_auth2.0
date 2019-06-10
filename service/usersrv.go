@@ -63,13 +63,13 @@ ERR:
 }
 
 // 查询client信息
-func QueryClientByClientKey(clientKey string) (*models.OauthClients,error) {
+func QueryClientByClientKey(clientKey string) (*models.OauthClient,error) {
   var(
-    clientModel models.OauthClients
+    clientModel models.OauthClient
     err error
     has bool
   )
-  clientModel = models.OauthClients{
+  clientModel = models.OauthClient{
     ClientKey: clientKey,
   }
   if has,err = database.G_engine.Get(&clientModel);err != nil {
@@ -126,7 +126,7 @@ func GetAuthorizationCodeByCode(code string) (*models.OauthAuthorizationCode,err
 }
 
 // 生成Token
-func CreateAccessToken(clientId string, userId int) (*models.OauthAccessToken,error) {
+func CreateAccessToken(code, clientId string, userId int) (*models.OauthAccessToken,error) {
 
   var(
     token string
@@ -135,6 +135,7 @@ func CreateAccessToken(clientId string, userId int) (*models.OauthAccessToken,er
     exportAt time.Time
     oatModel models.OauthAccessToken
     err error
+    oaCodeModel models.OauthAuthorizationCode
   )
 
   token = utils.CreateToken()
@@ -144,6 +145,7 @@ func CreateAccessToken(clientId string, userId int) (*models.OauthAccessToken,er
   hh, _ := time.ParseDuration(fmt.Sprintf("%vms",config.G_config.TokenExpiresAt))
   exportAt = nowTime.Add(hh)
 
+  //存入toke
   oatModel = models.OauthAccessToken{
     Token: token,
     UserId: userId,
@@ -154,8 +156,65 @@ func CreateAccessToken(clientId string, userId int) (*models.OauthAccessToken,er
     return nil,err
   }
 
+  //更新code状态
+  oaCodeModel = models.OauthAuthorizationCode{
+    Code: code,
+    IsUse: "T",
+  }
+  if _,err = database.G_engine.Where("code=?",oaCodeModel.Code).Update(oaCodeModel);err != nil {
+    return nil,err
+  }
+
   return &oatModel,nil
 }
 
+func GetTokenInfo(token string) (accessTokenModel models.OauthAccessToken, err error) {
+  var(
+    has bool
+  )
+  accessTokenModel = models.OauthAccessToken{
+    Token: token,
+  }
+  if has,err = database.G_engine.Where("token=?",accessTokenModel.Token).Get(&accessTokenModel);err !=nil {
+    return
+  }
+  if !has {
+    err = errors.New("没找到token")
+    return
+  }
+  return
+}
 
-//获取用户授权的结构
+func GetUserInfo(userId int) (*models.OauthUser,error) {
+  var(
+    accessUserModel models.OauthUser
+    has bool
+    err error
+  )
+  accessUserModel = models.OauthUser{}
+  accessUserModel.BaseModel.Id = userId
+  if has,err = database.G_engine.Get(&accessUserModel);err !=nil {
+    return nil,err
+  }
+  if !has {
+    return nil,errors.New("没找到token")
+  }
+  return &accessUserModel,nil
+}
+
+
+func CheckToken(token string) (accessTokenModel models.OauthAccessToken,err error) {
+  var(
+    nowTime time.Time
+  )
+  nowTime = time.Now()
+  if accessTokenModel,err = GetTokenInfo(token);err != nil {
+    return
+  }
+  //是否过期
+  if accessTokenModel.ExpiresAt.Sub(nowTime).Seconds() <= 0 {
+    err = errors.New("token过期")
+    return
+  }
+  return
+}

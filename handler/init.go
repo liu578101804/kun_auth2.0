@@ -4,13 +4,14 @@ import (
   "fmt"
   "github.com/liu578101804/kun_auth2.0/config"
   "github.com/gin-gonic/gin"
+  "net/http"
 )
 
 var(
   G_app *gin.Engine
 )
 
-func InitHandler() (err error) {
+func Init() (err error) {
 
   //var(
   //  logF *os.File
@@ -36,13 +37,27 @@ func InitHandler() (err error) {
   G_app.LoadHTMLGlob(config.G_config.HtmlPath+"/*/**")
 
   //注册页面路由
-  RegPageHandler()
+  RegHomeHandler()
   RegAdminHandler()
+  RegOauthHandler()
   RegUserHandler()
 
   //启动运行
   fmt.Println("server is run listing at", config.G_config.ApiPort)
-  _ = G_app.Run(fmt.Sprintf(":%d", config.G_config.ApiPort))
+  err = G_app.Run(fmt.Sprintf(":%d", config.G_config.ApiPort))
 
-  return nil
+  return
 }
+
+func RegHomeHandler() {
+  G_app.GET("/", HomePage)
+}
+
+func HomePage(c *gin.Context) {
+  c.HTML(http.StatusOK,"home/index", gin.H{
+    "title":"首页",
+  })
+}
+
+
+

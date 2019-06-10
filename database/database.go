@@ -36,9 +36,10 @@ func InitDatabase() (err error) {
   //初始化数据
   if userId,err = initAdminUser();err != nil {
     return
-  }
-  if _,err = initAdminSecret(userId);err != nil {
-    return
+  }else{
+    if _,err = initAdminSecret(userId);err != nil {
+      return
+    }
   }
 
   return
@@ -47,7 +48,7 @@ func InitDatabase() (err error) {
 func sycTable() (err error) {
 
   if err = G_engine.Sync2(
-    new(models.OauthClients),
+    new(models.OauthClient),
     new(models.OauthAuthorizationCode),
     new(models.OauthAccessToken),
     new(models.OauthRefreshToken),
@@ -68,6 +69,7 @@ func initAdminUser() (userId int,err error) {
   if has,err = G_engine.Get(&userM);err != nil {
     return
   }
+
   //是否已经创建了管理员
   if !has {
     //创建管理员
@@ -78,9 +80,11 @@ func initAdminUser() (userId int,err error) {
       Name: "管理员",
     }
     if _,err = G_engine.InsertOne(&nUserM);err != nil {
-      userId = nUserM.BaseModel.Id
       return
     }
+
+    userId = nUserM.BaseModel.Id
+    return
   }else{
     //更新管理员
     nUserM = models.OauthUser{
@@ -91,25 +95,27 @@ func initAdminUser() (userId int,err error) {
     if _,err = G_engine.Where("email=?",nUserM.Email).Update(&nUserM);err != nil {
       return
     }
+
+    userId = userM.BaseModel.Id
+    return
   }
-  userId = userM.BaseModel.Id
-  return
+
 }
 
 func initAdminSecret(userId int) (clientId int, err error) {
   var(
-    clientM models.OauthClients
-    nClientM  models.OauthClients
+    clientM models.OauthClient
+    nClientM  models.OauthClient
     has bool
   )
-  clientM = models.OauthClients{
+  clientM = models.OauthClient{
     UserId: userId,
   }
   if has,err = G_engine.Get(&clientM);err != nil {
     return
   }
   if !has {
-    nClientM = models.OauthClients{
+    nClientM = models.OauthClient{
       UserId: userId,
       ClientKey: config.G_config.AdminClientKey,
       ClientSecret:config.G_config.AdminClientSecret,
@@ -120,7 +126,7 @@ func initAdminSecret(userId int) (clientId int, err error) {
       return
     }
   }else{
-    nClientM = models.OauthClients{
+    nClientM = models.OauthClient{
       UserId: userId,
       ClientKey: config.G_config.AdminClientKey,
       ClientSecret:config.G_config.AdminClientSecret,

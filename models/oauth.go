@@ -10,7 +10,7 @@ type ModelCommon struct {
 }
 
 // 机构
-type OauthClients struct {
+type OauthClient struct {
   BaseModel    ModelCommon  `xorm:"extends"`
   UserId        int         `xorm:"INT(10) unique 'user_id'" json:"user_id"` //创建人
   ClientKey    string       `xorm:"VARCHAR(255)"    json:"client_key"`
@@ -19,8 +19,8 @@ type OauthClients struct {
   AppName      string      `xorm:"VARCHAR(50)"     json:"app_name"`  //应用名字
 }
 
-func (c *OauthClients) TableName() string {
-  return "oauth_clients"
+func (c *OauthClient) TableName() string {
+  return "oauth_client"
 }
 
 // 用户

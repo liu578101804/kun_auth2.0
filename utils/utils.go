@@ -3,6 +3,7 @@ package utils
 import (
   "math/rand"
   "time"
+  "strings"
 )
 
 func CreateCode() string {
@@ -18,11 +19,11 @@ func CreateUserOpenId() string {
 }
 
 func CreateClientSecret() string {
-  return GetRandomString(20)
+  return strings.ToLower(GetRandomString(20))
 }
 
 func CreateClientKey() string {
-  return GetRandomString(40)
+  return strings.ToLower(GetRandomString(40))
 }
 
 func CreatePassword(password string) string  {
