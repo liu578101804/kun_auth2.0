@@ -1,40 +1,29 @@
 {
+  "时区": "Asia/Shanghai",
+  "load_location": "Asia/Shanghai",
   "服务器端口":"启动时监听",
   "api_port": 7873,
-
   "静态资源路径": "不要以/结尾，同时 favicon.ico 默认从这目录下面找",
   "static_path": "./static",
-
   "模板文件路径":"不要以/结尾",
   "html_path": "./view",
-
   "数据库类型": "例如：sqlite3",
   "db_type": "sqlite3",
-
-  "数据库连接": "",
+  "数据库连接": "默认",
   "db_source":"./db.sqlite",
-
-  "日志目录":"",
+  "日志目录":"默认",
   "logo_path":"./logs/gin.log",
-
   "token过期时间":"单位毫秒",
   "token_expires_at": 6000000,
   "code过期时间": "单位毫秒",
   "code_expires_at": 20000,
-
-
-  "时区": "Asia/Shanghai",
-  "load_location": "Asia/Shanghai",
-
   "网站的地址": "http://127.0.0.1",
   "localhost": "http://127.0.0.1",
-
-  "系统名字": "",
+  "系统名字": "默认：管理系统",
   "app_name": "管理系统",
-
-  "管理员邮箱": "",
+  "管理员邮箱": "默认：admin@qq.com",
   "admin_email": "admin@qq.com",
-  "管理员密码": "",
+  "管理员密码": "默认：admin",
   "admin_password": "admin",
   "管理员的open_id": "很重要不能随便修改",
   "admin_open_id": "DGVrUqdhc2NHEHEtgi",
