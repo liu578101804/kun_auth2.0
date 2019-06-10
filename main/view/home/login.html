@@ -8,22 +8,25 @@
 
       <div class="login-plan">
         <div class="control">
-          <label for="">Username or email address</label>
-          <input class="input" type="text" id="email">
+          <h2>{{.title}}</h2>
+        </div>
+        <div class="control">
+          <label for="">邮箱</label>
+          <input class="input" type="email" id="email">
         </div>
 
         <div class="control">
-          <label for="">Password</label>
+          <label for="">密码</label>
           <input class="input" type="password" id="password">
         </div>
 
         <div class="control">
-          <button class="button is-info is-fullwidth" id="signButton">Sign in</button>
+          <button class="button is-info is-fullwidth" id="signButton">登录</button>
         </div>
       </div>
 
       <div class="regist-plan">
-        New to GitHub? <a href="">Create an account</a>.
+        还没有账号， 前去<a href="/oauth/register">注册</a>.
       </div>
 
     </div>
@@ -53,7 +56,7 @@
 
     $.ajax({
       type: 'POST',
-      url: "/login",
+      url: "/oauth/login",
       data: data,
       success: function (res) {
         if (res.code == 200) {
