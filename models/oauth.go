@@ -12,7 +12,7 @@ type ModelCommon struct {
 // 机构
 type OauthClient struct {
   BaseModel    ModelCommon  `xorm:"extends"`
-  UserId        int         `xorm:"INT(10) unique 'user_id'" json:"user_id"` //创建人
+  UserId        int         `xorm:"INT(10) 'user_id'" json:"user_id"` //创建人
   ClientKey    string       `xorm:"VARCHAR(255)"    json:"client_key"`
   ClientSecret string       `xorm:"VARCHAR(255)"    json:"client_secret"`
   RedirectUrl  string       `xorm:"VARCHAR(200)"    json:"redirect_uri"`  //回调地址
@@ -27,7 +27,8 @@ func (c *OauthClient) TableName() string {
 type OauthUser struct {
   BaseModel      ModelCommon  `xorm:"extends"`
   Email         string    `xorm:"VARCHAR(50)" json:"email"`
-  Password      string    `xorm:"VARCHAR(100)" json:"-"`
+  Password      string    `xorm:"VARCHAR(64)" json:"-"`
+  Salt          string    `xorm:"VARCHAR(40)" json:"-"`
 
   OpenId        string    `xorm:"VARCHAR(32) unique 'open_id'" json:"open_id"`
   Name          string    `xorm:"VARCHAR(50)" json:"name"`

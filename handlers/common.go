@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
   "github.com/gin-gonic/gin"
@@ -19,3 +19,4 @@ func createSuccess(data interface{}) *gin.H {
     "data": data,
   }
 }
+

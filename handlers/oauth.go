@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
   "github.com/gin-gonic/gin"
@@ -37,10 +37,8 @@ func RegOauthHandler()  {
 func LoginPage(c *gin.Context) {
   var(
    clientId  string
-   //returnTo  string
   )
   clientId = c.DefaultQuery("client_id","")
-  //returnTo = c.DefaultQuery("return_to","")
 
   if clientId == "" {
     goto ERR
@@ -53,7 +51,7 @@ func LoginPage(c *gin.Context) {
 
   ERR:
     //重定向到管理员
-    c.Redirect(http.StatusFound,"/oauth/login?client_id="+config.G_config.AdminClientKey)
+    c.Redirect(http.StatusFound,"/oauth/authorize?client_id="+config.G_config.AdminClientKey)
 }
 
 func RegisterPage(c *gin.Context) {
@@ -157,6 +155,7 @@ func OauthAccessToken(c *gin.Context) {
 
   var(
     errCode int
+    clientId  string
     clientSecret  string
     code  string
     err error
@@ -167,6 +166,7 @@ func OauthAccessToken(c *gin.Context) {
   )
   nowTime = time.Now()
 
+  clientId = c.DefaultPostForm("client_id","")
   clientSecret = c.DefaultPostForm("client_secret","")
   code = c.DefaultPostForm("code","")
 
@@ -194,7 +194,7 @@ func OauthAccessToken(c *gin.Context) {
     errCode = env.ERRCODE_OAUTH_ACCESS_Token + 4
     goto ERR
   }
-  if client.ClientSecret != clientSecret {
+  if client.ClientSecret != clientSecret || client.ClientKey == clientId {
     errCode = env.ERRCODE_OAUTH_ACCESS_Token + 5
     err = errors.New("秘钥不对")
     goto ERR
@@ -232,10 +232,10 @@ func OauthCheckToken(c *gin.Context)  {
     goto ERR
   }
 
-  //if accessTokenModel, err = checkToken(token);err != nil {
-  //  errCode = env.ERRCODE_OAUTH_CHECK_TOKEN + 2
-  //  goto ERR
-  //}
+  if accessTokenModel, err = service.CheckToken(token);err != nil {
+    errCode = env.ERRCODE_OAUTH_CHECK_TOKEN + 2
+    goto ERR
+  }
 
   c.JSON(http.StatusOK, createSuccess(gin.H{
     "expires_at": accessTokenModel.ExpiresAt.Format(env.TIME_LAYOUT),

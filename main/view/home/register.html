@@ -26,7 +26,7 @@
         </div>
 
         <div class="regist-plan">
-         已经有账号，前去<a href="/oauth/login">登录</a>.
+         已经有账号，前去<a href="/oauth/authorize">登录</a>.
         </div>
 
       </div>
@@ -52,7 +52,7 @@
         data: data,
         success: function (res) {
           if (res.code == 200) {
-            window.location.href = "/oauth/login";
+            window.location.href = "/oauth/authorize";
           } else {
             alert(res.msg);
           }

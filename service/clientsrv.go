@@ -3,7 +3,7 @@ package service
 import (
   "github.com/liu578101804/kun_auth2.0/models"
   "github.com/liu578101804/kun_auth2.0/utils"
-  "github.com/liu578101804/de/database"
+  "github.com/liu578101804/kun_auth2.0/database"
 )
 
 func CreateClient() *models.OauthClient {
@@ -12,8 +12,10 @@ func CreateClient() *models.OauthClient {
     clientKey string
     clientSecret string
   )
+
   clientKey = utils.CreateClientKey()
   clientSecret = utils.CreateClientSecret()
+
   client = models.OauthClient{
     ClientKey: clientKey,
     ClientSecret: clientSecret,

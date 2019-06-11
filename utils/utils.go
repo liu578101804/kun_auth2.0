@@ -3,32 +3,40 @@ package utils
 import (
   "math/rand"
   "time"
-  "strings"
+  "github.com/liu578101804/kun_auth2.0/env"
 )
 
+func CreateUserOpenId() string {
+  return GetRandomString(8)
+}
+
+func CreatePassword(password string) (res, salt string)  {
+  salt = Sha1(time.Now().Format(env.TIME_LAYOUT)+GetRandomString(8))
+  res = Sha256(password+salt)
+  return
+}
+
+func GetPassword(password,salt string) string {
+  return Sha256(password+salt)
+}
+
+
 func CreateCode() string {
-  return GetRandomString(18)
+  return Sha1(time.Now().Format(env.TIME_LAYOUT)+GetRandomString(18))[:20]
 }
 
 func CreateToken() string {
-  return GetRandomString(18)
-}
-
-func CreateUserOpenId() string {
-  return GetRandomString(18)
-}
-
-func CreateClientSecret() string {
-  return strings.ToLower(GetRandomString(20))
+  return Sha1(time.Now().Format(env.TIME_LAYOUT)+GetRandomString(20))[:40]
 }
 
 func CreateClientKey() string {
-  return strings.ToLower(GetRandomString(40))
+  return Sha1(time.Now().Format(env.TIME_LAYOUT)+GetRandomString(10))[:20]
 }
 
-func CreatePassword(password string) string  {
-  return password
+func CreateClientSecret() string {
+  return Sha256(time.Now().Format(env.TIME_LAYOUT)+GetRandomString(10))[:40]
 }
+
 
 // 生成随机数
 func GetRandomString(l int) string {
@@ -48,5 +56,5 @@ func GetTime() time.Time {
 }
 
 func Time(timeStr string) (time.Time, error) {
-  return time.ParseInLocation("2006-01-02 15:04:05" ,timeStr,time.Local)
+  return time.ParseInLocation(env.TIME_LAYOUT ,timeStr,time.Local)
 }

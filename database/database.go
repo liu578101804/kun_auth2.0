@@ -62,6 +62,8 @@ func initAdminUser() (userId int,err error) {
     userM models.OauthUser
     nUserM  models.OauthUser
     has bool
+    inputPassword string
+    salt string
   )
   userM = models.OauthUser{
     Email: config.G_config.AdminEmail,
@@ -70,12 +72,15 @@ func initAdminUser() (userId int,err error) {
     return
   }
 
+  inputPassword,salt = utils.CreatePassword(config.G_config.AdminPassword)
+
   //是否已经创建了管理员
   if !has {
     //创建管理员
     nUserM = models.OauthUser{
       Email: config.G_config.AdminEmail,
-      Password: utils.CreatePassword(config.G_config.AdminPassword),
+      Password: inputPassword,
+      Salt: salt,
       OpenId: config.G_config.AdminOpenId,
       Name: "管理员",
     }
@@ -89,7 +94,8 @@ func initAdminUser() (userId int,err error) {
     //更新管理员
     nUserM = models.OauthUser{
       Email: config.G_config.AdminEmail,
-      Password: utils.CreatePassword(config.G_config.AdminPassword),
+      Password: inputPassword,
+      Salt: salt,
       OpenId: config.G_config.AdminOpenId,
     }
     if _,err = G_engine.Where("email=?",nUserM.Email).Update(&nUserM);err != nil {
@@ -133,7 +139,7 @@ func initAdminSecret(userId int) (clientId int, err error) {
       RedirectUrl: config.G_config.Localhost,
       AppName: config.G_config.AppName,
     }
-    if _,err = G_engine.Where("user_id=?",userId).Update(&nClientM);err != nil {
+    if _,err = G_engine.Where("user_id=? AND client_key=?", userId, nClientM.ClientKey).Update(&nClientM);err != nil {
       return
     }
   }

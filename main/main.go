@@ -7,7 +7,7 @@ import (
   "time"
   "github.com/liu578101804/kun_auth2.0/config"
   "github.com/liu578101804/kun_auth2.0/database"
-  "github.com/liu578101804/kun_auth2.0/handler"
+  "github.com/liu578101804/kun_auth2.0/handlers"
 )
 
 var (
@@ -51,7 +51,7 @@ func main() {
   }
 
   //初始化路由
-  if err = handler.Init();err != nil {
+  if err = handlers.Init();err != nil {
     goto ERR
   }
 

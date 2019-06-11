@@ -29,7 +29,7 @@ func LoginService(email, password string) (*models.OauthUser, error) {
     return nil,errors.New("用户未注册")
   }
   //检查密码是否正确
-  if userModel.Password != password {
+  if userModel.Password != utils.GetPassword(password,userModel.Salt) {
     return nil,errors.New("密码错误")
   }
   return &userModel,nil
@@ -40,12 +40,16 @@ func RegisterService(email, password string) (*models.OauthUser, error)  {
   var(
     err error
     regUserModel models.OauthUser
+    salt string
+    inputPassword string
   )
+  inputPassword,salt = utils.CreatePassword(password)
   if _,err = LoginService(email,password);err != nil{
     if err.Error() == "用户未注册" {
       regUserModel = models.OauthUser{
         Email: email,
-        Password : password,
+        Password : inputPassword,
+        Salt: salt,
         OpenId: utils.CreateUserOpenId(),
       }
       if _,err = database.G_engine.InsertOne(&regUserModel);err != nil {
@@ -168,21 +172,23 @@ func CreateAccessToken(code, clientId string, userId int) (*models.OauthAccessTo
   return &oatModel,nil
 }
 
-func GetTokenInfo(token string) (accessTokenModel models.OauthAccessToken, err error) {
+func GetTokenInfo(token string) (*models.OauthAccessToken, error) {
   var(
     has bool
+    accessTokenModel models.OauthAccessToken
+    err error
   )
   accessTokenModel = models.OauthAccessToken{
     Token: token,
   }
   if has,err = database.G_engine.Where("token=?",accessTokenModel.Token).Get(&accessTokenModel);err !=nil {
-    return
+    return nil, err
   }
   if !has {
     err = errors.New("没找到token")
-    return
+    return nil, err
   }
-  return
+  return &accessTokenModel, nil
 }
 
 func GetUserInfo(userId int) (*models.OauthUser,error) {
@@ -203,7 +209,7 @@ func GetUserInfo(userId int) (*models.OauthUser,error) {
 }
 
 
-func CheckToken(token string) (accessTokenModel models.OauthAccessToken,err error) {
+func CheckToken(token string) (accessTokenModel *models.OauthAccessToken,err error) {
   var(
     nowTime time.Time
   )
