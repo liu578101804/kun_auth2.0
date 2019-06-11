@@ -2,6 +2,22 @@
 
 基于Go语言，实现auth2.0
 
+## 安装
+
+glide安装方法
+
+```
+go get github.com/Masterminds/glide
+go install github.com/Masterminds/glide
+```
+
+安装依赖：
+
+```
+glide install
+```
+
+
 
 ## 界面
 
