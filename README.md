@@ -1,6 +1,6 @@
 # kun_auth2.0
 
-实现auth2.0
+基于Go语言，实现auth2.0
 
 
 ## 界面
